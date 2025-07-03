@@ -9,7 +9,7 @@ class Bot {
     base_dynamite_weight = 0.4;
     dynamite_mult = 1.5;
     start = 10;
-    dynamite_cutoff = 500;
+    dynamite_cutoff = 0;
 
     updateGamestate(gamestate) {
             let p1 = gamestate.rounds.at(-1).p1;
@@ -31,9 +31,9 @@ class Bot {
             this.scores.D = this.base_dynamite_weight;
         }
 
-        this.scores.R = ((this.freqs.get('R') ?? 0) + (this.freqs.get('S') ?? 0)) / num_rounds;
-        this.scores.P = ((this.freqs.get('P') ?? 0) + (this.freqs.get('R') ?? 0)) / num_rounds;
-        this.scores.S = ((this.freqs.get('S') ?? 0) + (this.freqs.get('P') ?? 0)) / num_rounds;
+        this.scores.R = ((this.freqs.get('R') ?? 0) + (this.freqs.get('S') ?? 0) + (this.freqs.get('W') ?? 0)) / num_rounds;
+        this.scores.P = ((this.freqs.get('P') ?? 0) + (this.freqs.get('R') ?? 0) + (this.freqs.get('W') ?? 0)) / num_rounds;
+        this.scores.S = ((this.freqs.get('S') ?? 0) + (this.freqs.get('P') ?? 0) + (this.freqs.get('W') ?? 0)) / num_rounds;
 
         if (this.my_dynamite_count == 0 || num_rounds < this.dynamite_cutoff) {
             this.scores.D = 0;
@@ -51,7 +51,6 @@ class Bot {
         
 
         let move = this.weightedRandom();
-        console.log(this.my_dynamite_count);
         return move;
     }
 

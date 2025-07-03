@@ -4,8 +4,12 @@ class Bot {
 
     my_dynamite_count = 100;
 
-    scores = {"R": 1, "P": 1, "S": 1, "W": 0, "D": 0};
-    dynamite_weight = 1;
+    scores = {"R": 1, "P": 1, "S": 1, "W": 0, "D": this.base_dynamite_weight};
+    
+    base_dynamite_weight = 0.4;
+    dynamite_mult = 1.5;
+    start = 10;
+    dynamite_cutoff = 500;
 
     updateGamestate(gamestate) {
             let p1 = gamestate.rounds.at(-1).p1;
@@ -22,16 +26,16 @@ class Bot {
     updateScores(gamestate) {
         let num_rounds = gamestate.rounds.length;
         if (gamestate.rounds.at(-1).p1 == gamestate.rounds.at(-1).p2) {
-            this.scores.D += this.dynamite_weight;
+            this.scores.D *= this.dynamite_mult;
         } else {
-            this.scores.D = 0;
+            this.scores.D = this.base_dynamite_weight;
         }
 
         this.scores.R = ((this.freqs.get('R') ?? 0) + (this.freqs.get('S') ?? 0)) / num_rounds;
         this.scores.P = ((this.freqs.get('P') ?? 0) + (this.freqs.get('R') ?? 0)) / num_rounds;
         this.scores.S = ((this.freqs.get('S') ?? 0) + (this.freqs.get('P') ?? 0)) / num_rounds;
 
-        if (this.my_dynamite_count == 0) {
+        if (this.my_dynamite_count == 0 || num_rounds < this.dynamite_cutoff) {
             this.scores.D = 0;
         }
         console.log(this.scores)
@@ -40,11 +44,14 @@ class Bot {
     makeMove(gamestate) {
         if (gamestate.rounds.length > 0) {
             this.updateGamestate(gamestate);
-            this.updateScores(gamestate);
-        }
+            if (gamestate.rounds.length > this.start) {
+                this.updateScores(gamestate);
+            }
+        } 
+        
 
         let move = this.weightedRandom();
-
+        console.log(this.my_dynamite_count);
         return move;
     }
 

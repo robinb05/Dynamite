@@ -1,16 +1,17 @@
 class Bot {
 
-    uni_freqs = new Map();
+    freqs = new Map();
 
     my_dynamite_count = 100;
 
-    scores = {"R": 1, "P": 1, "S": 1, "W": 0, "D": 0}
+    scores = {"R": 1, "P": 1, "S": 1, "W": 0, "D": 0};
+    dynamite_weight = 0.4;
 
     updateGamestate(gamestate) {
             let p1 = gamestate.rounds.at(-1).p1;
             let p2 = gamestate.rounds.at(-1).p2;
-            let uni_str = p1+p2;
-            this.uni_freqs.set(uni_str, (this.uni_freqs.get(uni_str) ?? 0) + 1);
+
+            this.freqs.set(p2, (this.freqs.get(p2) ?? 0) + 1);
 
             if (p1 == "D") {
                 this.my_dynamite_count--;
@@ -19,11 +20,16 @@ class Bot {
     }
 
     updateScores(gamestate) {
+        let num_rounds = gamestate.rounds.length;
         if (gamestate.rounds.at(-1).p1 == gamestate.rounds.at(-1).p2) {
-            this.scores.D++;
+            this.scores.D += this.dynamite_weight;
         } else {
             this.scores.D = 0;
         }
+
+        this.scores.R = (this.freqs.get("R") + this.freqs.get("S")) / num_rounds;
+        this.scores.P = (this.freqs.get("P") + this.freqs.get("R")) / num_rounds;
+        this.scores.S = (this.freqs.get("S") + this.freqs.get("P")) / num_rounds;
 
         if (this.my_dynamite_count == 0) {
             this.scores.D = 0;

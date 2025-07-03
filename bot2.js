@@ -1,5 +1,3 @@
-const { weightedRandom, my_dynamite_count } = require("./bot1");
-
 class Bot {
     pair_freqs = new Map();
     uni_freqs = new Map();

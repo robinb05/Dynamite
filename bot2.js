@@ -5,7 +5,7 @@ class Bot {
     my_dynamite_count = 100;
 
     scores = {"R": 1, "P": 1, "S": 1, "W": 0, "D": 0};
-    dynamite_weight = 0.4;
+    dynamite_weight = 1;
 
     updateGamestate(gamestate) {
             let p1 = gamestate.rounds.at(-1).p1;
@@ -13,7 +13,7 @@ class Bot {
 
             this.freqs.set(p2, (this.freqs.get(p2) ?? 0) + 1);
 
-            if (p1 == "D") {
+            if (p1 == 'D') {
                 this.my_dynamite_count--;
             }
 
@@ -27,13 +27,14 @@ class Bot {
             this.scores.D = 0;
         }
 
-        this.scores.R = (this.freqs.get("R") + this.freqs.get("S")) / num_rounds;
-        this.scores.P = (this.freqs.get("P") + this.freqs.get("R")) / num_rounds;
-        this.scores.S = (this.freqs.get("S") + this.freqs.get("P")) / num_rounds;
+        this.scores.R = ((this.freqs.get('R') ?? 0) + (this.freqs.get('S') ?? 0)) / num_rounds;
+        this.scores.P = ((this.freqs.get('P') ?? 0) + (this.freqs.get('R') ?? 0)) / num_rounds;
+        this.scores.S = ((this.freqs.get('S') ?? 0) + (this.freqs.get('P') ?? 0)) / num_rounds;
 
         if (this.my_dynamite_count == 0) {
             this.scores.D = 0;
         }
+        console.log(this.scores)
     }
 
     makeMove(gamestate) {

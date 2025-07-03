@@ -1,14 +1,10 @@
 class Bot {
-    pair_freqs = new Map();
-    uni_freqs = new Map();
-    dynamite1_count = 0;
-    dynamite2_count = 0;
 
-    
+    uni_freqs = new Map();
+
     my_dynamite_count = 100;
 
-    scores = [1,1,1,0,0]
-    moves = ["R", "P", "S", "W", "D"];
+    scores = {"R": 1, "P": 1, "S": 1, "W": 0, "D": 0}
 
     updateGamestate(gamestate) {
             let p1 = gamestate.rounds.at(-1).p1;
@@ -17,30 +13,20 @@ class Bot {
             this.uni_freqs.set(uni_str, (this.uni_freqs.get(uni_str) ?? 0) + 1);
 
             if (p1 == "D") {
-                this.dynamite1_count++;
                 this.my_dynamite_count--;
             }
-            if (p2 == "D") {
-                this.dynamite2_count++;
-            }
 
-            if (gamestate.rounds.length > 1) {
-                let oldp1 = gamestate.rounds.at(-2).p1;
-                let oldp2 = gamestate.rounds.at(-2).p2;
-                let pair_str = oldp1+oldp2+p1+p2;
-                this.pair_freqs.set(pair_str, (this.pair_freqs.get(pair_str) ?? 0) + 1)
-            }
     }
 
     updateScores(gamestate) {
         if (gamestate.rounds.at(-1).p1 == gamestate.rounds.at(-1).p2) {
-            this.scores[4]++;
+            this.scores.D++;
         } else {
-            this.scores[4] = 0;
+            this.scores.D = 0;
         }
 
         if (this.my_dynamite_count == 0) {
-            this.scores[4] = 0;
+            this.scores.D = 0;
         }
     }
 
@@ -56,9 +42,11 @@ class Bot {
     }
 
     weightedRandom() {
-        const cum_scores = [this.scores[0]];
-        for (let i = 1; i < this.scores.length; i++) {
-            cum_scores.push(cum_scores[i-1]+this.scores[i]);
+        let moves = Object.keys(this.scores);
+        let vals = Object.values(this.scores);
+        const cum_scores = [vals[0]];
+        for (let i = 1; i < vals.length; i++) {
+            cum_scores.push(cum_scores[i-1]+vals[i]);
         }
 
         let random = Math.random() * cum_scores[cum_scores.length - 1];
@@ -70,7 +58,7 @@ class Bot {
             }
         }
 
-        return this.moves[choice];
+        return moves[choice];
     }
 }
 
